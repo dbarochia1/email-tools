@@ -178,11 +178,29 @@ class EmailTools {
         if (!output) {
             return;
         }
+
+        let separator = '\n';
+        let items: string[] = [];
+
+        if (output.includes('\n')) {
+            separator = '\n';
+            items = output.split('\n');
+        } else if (output.includes(';')) {
+            separator = '; ';
+            items = output.split(';');
+        } else if (output.includes(',')) {
+            separator = ', ';
+            items = output.split(',');
+        } else {
+            return;
+        }
+
+        const sortedItems = items
+            .map(item => item.trim())
+            .filter(item => item.length > 0)
+            .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
         
-        const lines = output.split('\n').filter(line => line.trim().length > 0);
-        lines.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
-        
-        this.setOutput(lines.join('\n'));
+        this.setOutput(sortedItems.join(separator));
     }
 
     /**
