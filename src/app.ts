@@ -175,27 +175,21 @@ class EmailTools {
     private sortOutput(): void {
         const output = this.outputTextarea.value;
         
-        if (!output) {
+        if (!output || output.trim().length === 0) {
             return;
         }
 
-        let separator = '\n';
-        let items: string[] = [];
+        const delimiterMatch = output.match(/\r?\n|;|,/);
 
-        if (output.includes('\n')) {
-            separator = '\n';
-            items = output.split('\n');
-        } else if (output.includes(';')) {
-            separator = '; ';
-            items = output.split(';');
-        } else if (output.includes(',')) {
-            separator = ', ';
-            items = output.split(',');
-        } else {
+        if (!delimiterMatch) {
             return;
         }
 
-        const sortedItems = items
+        const rawDelimiter = delimiterMatch[0];
+        const separator = rawDelimiter.includes('\n') ? '\n' : `${rawDelimiter} `;
+
+        const sortedItems = output
+            .split(/\s*(?:\r?\n|;|,)\s*/)
             .map(item => item.trim())
             .filter(item => item.length > 0)
             .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
