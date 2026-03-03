@@ -4,7 +4,10 @@ class EmailTools {
     constructor() {
         this.inputTextarea = document.getElementById('input-text');
         this.outputTextarea = document.getElementById('output-text');
+        this.sortButton = document.getElementById('btn-sort');
+        this.copyButton = document.getElementById('btn-copy');
         this.initializeEventListeners();
+        this.updateUtilityButtonsState();
     }
     initializeEventListeners() {
         // Email extraction buttons
@@ -28,6 +31,16 @@ class EmailTools {
     }
     setOutput(text) {
         this.outputTextarea.value = text;
+        this.updateUtilityButtonsState();
+    }
+    updateUtilityButtonsState() {
+        const hasOutput = this.outputTextarea.value.trim().length > 0;
+        if (this.sortButton) {
+            this.sortButton.disabled = !hasOutput;
+        }
+        if (this.copyButton) {
+            this.copyButton.disabled = !hasOutput;
+        }
     }
     /**
      * Extract email addresses from input text.
@@ -140,7 +153,10 @@ class EmailTools {
         try {
             await navigator.clipboard.writeText(output);
             // Visual feedback
-            const copyBtn = document.getElementById('btn-copy');
+            const copyBtn = this.copyButton;
+            if (!copyBtn) {
+                return;
+            }
             const originalText = copyBtn.textContent;
             copyBtn.textContent = 'Copied!';
             copyBtn.style.backgroundColor = '#1e8449';

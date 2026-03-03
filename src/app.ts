@@ -3,12 +3,17 @@
 class EmailTools {
     private inputTextarea: HTMLTextAreaElement;
     private outputTextarea: HTMLTextAreaElement;
+    private sortButton: HTMLButtonElement | null;
+    private copyButton: HTMLButtonElement | null;
 
     constructor() {
         this.inputTextarea = document.getElementById('input-text') as HTMLTextAreaElement;
         this.outputTextarea = document.getElementById('output-text') as HTMLTextAreaElement;
+        this.sortButton = document.getElementById('btn-sort') as HTMLButtonElement | null;
+        this.copyButton = document.getElementById('btn-copy') as HTMLButtonElement | null;
 
         this.initializeEventListeners();
+        this.updateUtilityButtonsState();
     }
 
     private initializeEventListeners(): void {
@@ -38,6 +43,19 @@ class EmailTools {
 
     private setOutput(text: string): void {
         this.outputTextarea.value = text;
+        this.updateUtilityButtonsState();
+    }
+
+    private updateUtilityButtonsState(): void {
+        const hasOutput = this.outputTextarea.value.trim().length > 0;
+
+        if (this.sortButton) {
+            this.sortButton.disabled = !hasOutput;
+        }
+
+        if (this.copyButton) {
+            this.copyButton.disabled = !hasOutput;
+        }
     }
 
     /**
@@ -181,7 +199,12 @@ class EmailTools {
             await navigator.clipboard.writeText(output);
             
             // Visual feedback
-            const copyBtn = document.getElementById('btn-copy') as HTMLButtonElement;
+            const copyBtn = this.copyButton;
+
+            if (!copyBtn) {
+                return;
+            }
+
             const originalText = copyBtn.textContent;
             copyBtn.textContent = 'Copied!';
             copyBtn.style.backgroundColor = '#1e8449';
